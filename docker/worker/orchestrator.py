@@ -98,14 +98,15 @@ class Orchestrator:
 
         # Figure out which processor(s) to use
         # In theory, there could be multiple processors for the same job name.
-        jobs = []
-        for job in self.config.get("config", []):
+        jobs = [
+            job
+            for job in self.config.get("config", [])
             if (
                 job.get("enabled", True)
                 and job.get("exec-environment") == "docker-scanner"
                 and job.get("job-name") == content.get("job-name")
-            ):
-                jobs.append(job)
+            )
+        ]
 
         logger.debug("Job list: %s", jobs)
         for job in sorted(jobs, key=lambda j: j.get("ordering", 0)):

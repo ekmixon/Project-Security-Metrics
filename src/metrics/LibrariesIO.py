@@ -29,7 +29,7 @@ class RefreshLibrariesIO(BaseJob):
 
         name = self.package_url.name
         if self.package_url.namespace:
-            name = self.package_url.namespace + "/" + name
+            name = f"{self.package_url.namespace}/{name}"
 
         s = Search()
         project = s.project(platforms=self.package_url.type, name=name)
@@ -37,8 +37,6 @@ class RefreshLibrariesIO(BaseJob):
         if not project:
             logging.info("Unable to find project on libraries.io.")
             return
-
-        payloads = []
 
         # Versions
         versions_payload = {
@@ -52,21 +50,18 @@ class RefreshLibrariesIO(BaseJob):
             versions_payload["values"].append(
                 {"timestamp": version.get("published_at"), "value": version.get("number")}
             )
-        payloads.append(versions_payload)
-
+        payloads = [versions_payload]
         # Misc
         for key in ["description", "homepage"]:
-            value = project.get(key)
-            if not value:
-                continue
-            payloads.append(
-                {
-                    "package_url": str(self.package_url),
-                    "key": f"openssf.metadata.{key}",
-                    "operation": "replace",
-                    "values": [{"value": value}],
-                }
-            )
+            if value := project.get(key):
+                payloads.append(
+                    {
+                        "package_url": str(self.package_url),
+                        "key": f"openssf.metadata.{key}",
+                        "operation": "replace",
+                        "values": [{"value": value}],
+                    }
+                )
 
         res = requests.post(self.METRIC_API_ENDPOINT, json=payloads, timeout=120)
         if res.status_code == 200:

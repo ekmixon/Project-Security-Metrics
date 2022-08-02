@@ -41,9 +41,9 @@ class Command(BaseCommand):
 
     def handle_snyk(self, package: Package, purl: PackageURL):
         logging.debug("handle_snyk(%s)", package)
-        snyk_url_map = {"npm": "npm-package", "docker": "docker", "pypi": "pypi"}
         if purl.type in ["npm", "docker", "pypi"]:
             metric = Metric(package=package, key="openssf.calc-metadata.snyk-advisory-url")
+            snyk_url_map = {"npm": "npm-package", "docker": "docker", "pypi": "pypi"}
             metric.value = f"https://snyk.io/advisor/{snyk_url_map[purl.type]}/{package.full_name}"
             metric.save()
 
@@ -57,8 +57,7 @@ class Command(BaseCommand):
     def handle_project_url(self, package: Package, purl: PackageURL):
         logging.debug("handle_project_url(%s)", package)
         try:
-            url = self.purl2url(purl)
-            if url:
+            if url := self.purl2url(purl):
                 metric = Metric(package=package, key="openssf.calc-metadata.project-url")
                 metric.value = url
                 metric.save()
@@ -77,6 +76,4 @@ class Command(BaseCommand):
             return f"https://bitbucket.org/{purl.namespace}/{purl.name}"
         if purl.type == "nuget":
             return f"https://nuget.org/packages/{purl.name}"
-        if purl.type == "pypi":
-            return f"https://pypi.org/project/{purl.name}"
-        return None
+        return f"https://pypi.org/project/{purl.name}" if purl.type == "pypi" else None

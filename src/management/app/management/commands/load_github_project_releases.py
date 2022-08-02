@@ -105,8 +105,11 @@ class Command(BaseCommand):
 
                 properties = []
                 for version in versions:
-                    date_ = version.get("target", {}).get("tagger", {}).get("date")
-                    if date_:
+                    if (
+                        date_ := version.get("target", {})
+                        .get("tagger", {})
+                        .get("date")
+                    ):
                         properties.append({"timestamp": date_, "value": version.get("name")})
                 metric.properties = properties
                 metric.save()
@@ -117,14 +120,14 @@ class Command(BaseCommand):
                 metric, _ = Metric.objects.get_or_create(
                     package=package, key="openssf.version.github.release"
                 )
-                properties = []
                 releases = results.get("repository", {}).get("releases", {}).get("edges", [])
-                for release in releases:
-                    properties.append(
-                        {
-                            "timestamp": release.get("node", {}).get("createdAt"),
-                            "value": release.get("node", {}).get("tagName"),
-                        }
-                    )
+                properties = [
+                    {
+                        "timestamp": release.get("node", {}).get("createdAt"),
+                        "value": release.get("node", {}).get("tagName"),
+                    }
+                    for release in releases
+                ]
+
                 metric.properties = properties
                 metric.save()

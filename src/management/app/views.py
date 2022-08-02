@@ -31,8 +31,7 @@ def home(request: HttpRequest) -> HttpResponse:
     sample_projects = Package.objects.filter(package_url__in=popular_projects_purls)
     sample_projects = set(sample_projects)
 
-    all_packages = Package.objects.all()
-    if all_packages:
+    if all_packages := Package.objects.all():
         max_id = all_packages.order_by("-pk")[0].pk
         attempts_left = 20
         while len(sample_projects) < 5 and attempts_left > 0:
@@ -83,27 +82,25 @@ def api_get_package(request: HttpRequest) -> HttpResponse:
         purl = PackageURL.from_string(package_url)
         if not purl:
             return HttpResponseBadRequest("Invalid Package URL.")
-    else:
-        url = request.GET.get("url")
-        if url:
-            purl = url2purl(url)
-            if not purl:
-                return HttpResponseBadRequest("Invalid URL.")
+    elif url := request.GET.get("url"):
+        purl = url2purl(url)
+        if not purl:
+            return HttpResponseBadRequest("Invalid URL.")
     if not purl:
         return HttpResponseBadRequest("Required, package_url or url.")
 
     package = get_object_or_404(Package, package_url=str(purl))
     data = {"package_url": package.package_url}
-    metrics = []
+    metrics = [
+        {
+            "key": metric.key,
+            "value": metric.value,
+            "properties": metric.properties,
+        }
+        for metric in package.metric_set.all()
+    ]
 
-    for metric in package.metric_set.all():
-        metrics.append(
-            {
-                "key": metric.key,
-                "value": metric.value,
-                "properties": metric.properties,
-            }
-        )
+
     data["metrics"] = metrics
     json_response = json.dumps(data, indent=2)
     return HttpResponse(json_response, content_type="application/json")

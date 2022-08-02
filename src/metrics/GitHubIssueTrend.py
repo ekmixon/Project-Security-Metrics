@@ -92,10 +92,10 @@ class RefreshGithubIssueTrend(BaseJob):
 
         if time_to_close_agg:
             time_to_close_agg_avg = (
-                float(sum([r.total_seconds() for r in time_to_close_agg]))
+                float(sum(r.total_seconds() for r in time_to_close_agg))
                 / len(time_to_close_agg)
-                / (60 * 24)
-            )
+            ) / (60 * 24)
+
 
         if num_open + num_closed == 0:
             open_pct = 0

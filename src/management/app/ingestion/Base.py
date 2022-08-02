@@ -50,8 +50,9 @@ class BaseJob:
                 os.environ["PATH"] = os.environ["PATH"] + ":./ossgadget"
                 prefix = "ossgadget/OSSGadget_linux_0.1.260/"
 
-        res = subprocess.check_output([prefix + "oss-find-source", str(self.package_url)])
-        if res:
+        if res := subprocess.check_output(
+            [f"{prefix}oss-find-source", str(self.package_url)]
+        ):
             repository_url = res.decode("utf-8").split()[1]
             if repository_url.startswith("https://github.com/"):
                 return repository_url

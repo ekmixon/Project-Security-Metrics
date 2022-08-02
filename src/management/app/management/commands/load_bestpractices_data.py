@@ -26,7 +26,7 @@ class Command(BaseCommand):
         page = 0
         while True:
             page += 1
-            url = self.BEST_PRACTICES_ROOT_URL + f"?page={page}"
+            url = f"{self.BEST_PRACTICES_ROOT_URL}?page={page}"
 
             res = requests.get(url, timeout=120)
             if res.status_code != 200:
@@ -58,9 +58,8 @@ class Command(BaseCommand):
                         package=package, key__startswith="openssf.bestpractice."
                     ).delete()
 
-                    project_id = entry.get("id")
-                    if project_id:
-                        metric = Metric(package=package, key=f"openssf.bestpractice.detail-url")
+                    if project_id := entry.get("id"):
+                        metric = Metric(package=package, key="openssf.bestpractice.detail-url")
                         metric.value = (
                             f"https://bestpractices.coreinfrastructure.org/projects/{project_id}"
                         )

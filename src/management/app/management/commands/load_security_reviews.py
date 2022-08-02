@@ -93,9 +93,10 @@ class Command(BaseCommand):
         if not metadata:
             logging.warning("No metadata found for file: %s", filename)
             return
-        metadata["review-url-absolute"] = (
-            "https://github.com/ossf/security-reviews/blob/main" + relative_path
-        )
+        metadata[
+            "review-url-absolute"
+        ] = f"https://github.com/ossf/security-reviews/blob/main{relative_path}"
+
         metadata["review-url-relative"] = relative_path
 
         # It's OK to have multiple reviews, but not the same review multiple times in

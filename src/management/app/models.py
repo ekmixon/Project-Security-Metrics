@@ -16,24 +16,20 @@ class Package(models.Model):
 
     @property
     def full_name(self):
-        purl = PackageURL.from_string(self.package_url)
-        if not purl:
-            return None
-        if purl.type in ["npm", "github"]:
-            if purl.namespace:
-                return f"{purl.namespace}/{purl.name}"
-            else:
-                return purl.name
+        if purl := PackageURL.from_string(self.package_url):
+            return (
+                f"{purl.namespace}/{purl.name}"
+                if purl.type in ["npm", "github"] and purl.namespace
+                else purl.name
+            )
+
         else:
-            return purl.name
+            return None
 
     @property
     def full_name_version(self):
         purl = PackageURL.from_string(self.package_url)
-        if purl.version:
-            return f"{self.full_name}@{purl.version}"
-        else:
-            return self.full_name
+        return f"{self.full_name}@{purl.version}" if purl.version else self.full_name
 
     class Meta:
         db_table = "package"
