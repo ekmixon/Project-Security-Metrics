@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.9.5-buster
+FROM python:3.12.0a7-buster
 
 # set work directory
 WORKDIR /usr/src/app
