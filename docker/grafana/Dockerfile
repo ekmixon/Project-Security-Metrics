@@ -1,4 +1,4 @@
-FROM grafana/grafana
+FROM grafana/grafana:10.1.4
 
 USER root
 # RUN sed -i 's/;root_url.*/root_url = %(protocol)s:\/\/%(domain)s:%(http_port)s\/grafana\//' /etc/grafana/grafana.ini
