@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.16.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.7" />
-    <PackageReference Include="Npgsql" Version="5.0.0" />
+    <PackageReference Include="Npgsql" Version="5.0.18" />
     <PackageReference Include="PackageUrl" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
