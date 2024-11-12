@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine
+FROM nginx:1.27.2-alpine3.20
 
 # Create a self-signed certificate
 
